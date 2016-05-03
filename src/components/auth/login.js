@@ -2,7 +2,6 @@ import { createValidator, required } from '../../utils/validation'
 import { Link } from 'react-router'
 import { reduxForm } from 'redux-form'
 import React, { PropTypes, Component } from 'react'
-import { translate } from 'react-i18next/lib'
 
 
 const validate = createValidator({
@@ -21,24 +20,24 @@ export class LoginFormComponent extends Component {
         } = this.props
     return (
       <div>
-        <p>{t('login.title')}</p>
+        <p>{'login.title'}</p>
         <form onSubmit={handleSubmit}>
           <div>
-            <label>{t('username')}</label>
+            <label>{'username'}</label>
             <input type='text' placeholder='username' {...username} />
             {username.touched && username.error && <div>{username.error}</div>}
           </div>
           <div>
-            <label>{t('password')}</label>
+            <label>{'password'}</label>
             <input type='password' placeholder='password' {...password} />
             {password.touched && password.error && <div>{password.error}</div>}
           </div>
           {error && <div>{error}</div>}
           <button disabled={submitting} type='submit' onClick={handleSubmit}>
-            {submitting ? <i/> : <i/>} {t('submit')}
+            {submitting ? <i/> : <i/>} {'submit'}
           </button>
         </form>
-        {t('login.goRegister')}<Link to='/register'>{t('login.registerActionCall')}</Link>
+        <Link to='/register'>{'login.registerActionCall'}</Link>
       </div>
     )
   }
@@ -58,4 +57,4 @@ const LoginForm = reduxForm({
   fields: ['username', 'password']
 })(LoginFormComponent)
 
-export default translate(['common'])(LoginForm)
+export default LoginForm

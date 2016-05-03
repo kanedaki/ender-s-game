@@ -42,7 +42,8 @@ export default function configureStore(initialState) {
     initialState,
     compose(
       applyMiddleware(reduxRouter, thunk, api),
-      DevTools.instrument()
+      window.devToolsExtension ? window.devToolsExtension() : DevTools.instrument()
+
     )
   )
 
