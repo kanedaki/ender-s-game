@@ -3,21 +3,31 @@ const borders = {
   maxLeft: 500
 }
 
-export function wallColision({cx, cy}, direction) {
-  switch(direction) {
-    case 'up':
-      return cy - 6 <= 0
-    case 'down':
-      return cy + 6 >= borders.maxTop
-    case 'right':
-      return cx + 6 >= borders.maxLeft
-    case 'left':
-      return cx - 6 <= 0
-  }
+function findOtherTeam(team, object) {
+  return object.team !== team
 }
 
+export function oppositeDoorCollision(circle, doors, team) {
+  return doors.filter(findOtherTeam.bind(null, team)).map(oppositeDoor => {
+    return doorCollision(circle, [[oppositeDoor.cx, oppositeDoor.cy], [oppositeDoor.dx, oppositeDoor.dy]])    
+  }).some(collision => {
+    return collision  
+  })
+}
 
-export function obstacleCollision(circle, polygons) {
+function doorCollision(circle, line) {
+  return pointLineSegmentDistance(circle, line) <= circle[2]  
+}
+
+export function wallCollision(radio, {cx, cy}, polygons) {
+  return outBorders(radio, {cx, cy}) || obstacleCollision([cx, cy, radio], polygons)
+}
+
+function outBorders(radio, {cx, cy}) {
+  return cy - radio <= 0 || cy + radio >= borders.maxTop || cx - radio <=0 || cx + radio >=borders.maxLeft
+}
+
+function obstacleCollision(circle, polygons) {
   return polygons.some((p) => {
 		return intersects(circle, p)
 	})	

@@ -1,14 +1,12 @@
 import React, { PropTypes, Component } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import Player from '../player'
-import { startGame } from '../../modules/game/actions'
-import Bullet from '../bullet'
-import Door from '../door'
+import Player from '../presentation/player'
+import Bullet from '../presentation/bullet'
+import Door from '../presentation/door'
+import GameState from '../presentation/gameState'
 
-const devTools = __DEV__ ? React.createFactory(require('../common/dev-tools').default) : () => null
+const devTools = __DEV__ ? React.createFactory(require('components/presentation/dev-tools').default) : () => null
 
-class App extends Component {
+export default class GameLayout extends Component {
   componentWillMount() {
     this.props.startGame()  
   }
@@ -32,6 +30,12 @@ class App extends Component {
 			return <Door key={i} {...door} />
 		})
 	}
+  renderGameState() {
+    const { gameState } = this.props
+    if (gameState === 'FINISHED') {
+      return <GameState state={gameState} />  
+    }  
+  }
   render() {
     const {player: {cx, cy}} = this.props
     return (
@@ -40,25 +44,16 @@ class App extends Component {
 				{ this.renderPolygons() }
         { this.renderBullets() }
 				{ this.renderDoors() }
+        { this.renderGameState() }
       </svg>
     )
   }
 }
 
-App.propTypes = {
+GameLayout.propTypes = {
+  player: PropTypes.object.isRequired,
+  bullets: PropTypes.array.isRequired,
+  polygons: PropTypes.array.isRequired,
+  doors: PropTypes.array.isRequired,
+	gameState: PropTypes.string.isRequired
 }
-
-function mapStateToProps(state) {
-  return {
-    player: state.game.player,
-    bullets: state.game.bullets,
-		polygons: state.game.polygons,
-		doors: state.game.doors
-  }
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ startGame }, dispatch)
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App)
