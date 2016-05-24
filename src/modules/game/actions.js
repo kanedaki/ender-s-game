@@ -38,8 +38,8 @@ function ableToJump(radio, position, direction, polygons) {
 
 export function movePlayer(direction) {
   return (dispatch, getState) => {
-    const { polygons, player} = getState().game,
-          {cx, cy, isMoving, radio} = player
+    const { polygons, players, me} = getState().game,
+          {cx, cy, isMoving, radio} = players[me]
     if (!isMoving || ableToJump(radio, {cx, cy}, direction, polygons)) {
 			const possibleNextMove = move({cx, cy}, direction),
             collision = wallCollision(radio, possibleNextMove, polygons) 
@@ -66,7 +66,8 @@ export function startGame() {
 
 export function fire(direction) {
   return (dispatch, getState) => {
-    const player = getState().game.player
+    const { players, me } = getState().game,
+          player = players[me]
     dispatch({
       type: 'FIRE',
       payload: {
@@ -133,8 +134,8 @@ function manageBullets(dispatch, bullets, polygons) {
 
 function updateGame(dispatch, getState) {
   const { gameState, game } = getState()
-  const { player, polygons, doors, bullets } = game
-  managePlayer(dispatch, player, polygons, doors)
+  const { players, polygons, doors, bullets, me } = game
+  managePlayer(dispatch, players[me], polygons, doors)
   manageBullets(dispatch, bullets, polygons)
   dispatch({
     type: 'GAME_UPDATED'  

@@ -12,7 +12,8 @@ function Game(props) {
 
 function mapStateToProps(state) {
   return {
-    player: state.game.player,
+    players: state.game.players,
+    me: state.game.me,
     bullets: state.game.bullets,
 		polygons: state.game.polygons,
 		doors: state.game.doors,

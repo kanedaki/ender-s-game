@@ -36,14 +36,20 @@ export default class GameLayout extends Component {
       return <GameState state={gameState} />  
     }  
   }
+  renderPlayers() {
+    const {players, me} = this.props
+    return Object.keys(players).map((player, i) => {
+      const {cx, cy, radio, team} = players[player]
+      return  <Player key={i} cx={cx} cy={cy} r={radio} color={me === player ? 'green' : team}/>
+    })
+  }
   render() {
-    const {player: {cx, cy}} = this.props
     return (
       <svg height='500' width='500' style={{border: "1px solid black"}}>
-        <Player cx={cx} cy={cy} r={6} fill='#015655'/>
 				{ this.renderPolygons() }
         { this.renderBullets() }
 				{ this.renderDoors() }
+        { this.renderPlayers() }
         { this.renderGameState() }
       </svg>
     )
@@ -51,7 +57,8 @@ export default class GameLayout extends Component {
 }
 
 GameLayout.propTypes = {
-  player: PropTypes.object.isRequired,
+  players: PropTypes.object.isRequired,
+  me: PropTypes.string.isRequired,
   bullets: PropTypes.array.isRequired,
   polygons: PropTypes.array.isRequired,
   doors: PropTypes.array.isRequired,

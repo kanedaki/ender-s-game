@@ -1,12 +1,38 @@
 const initialState = {
-  player: {
-		id: 1,
-    team: 'red',
-    radio: 6,
-    cx: 40,
-    cy: 40,
-    isMoving: true,
-    direction: 'left'
+  me: '1',
+  players: {
+    1: {
+      team: 'red',
+      radio: 6,
+      cx: 5,
+      cy: 20,
+      isMoving: false,
+      direction: 'left'
+    },
+    2: {
+      team: 'red',
+      radio: 6,
+      cx: 5,
+      cy: 26,
+      isMoving: false,
+      direction: 'left'
+    },
+    3: {
+      team: 'blue',
+      radio: 6,
+      cx: 495,
+      cy: 250,
+      isMoving: false,
+      direction: 'left'
+    },
+    4: {
+      team: 'blue',
+      radio: 6,
+      cx: 495,
+      cy: 256,
+      isMoving: false,
+      direction: 'left'
+    }
   },
   bullets: [],
 	polygons: [
@@ -16,14 +42,14 @@ const initialState = {
 	],
 	doors: [
 		{
-      team: 'blue',
+      team: 'red',
 			cx: 0,
 			cy: 20,
       dx: 0,
       dy: 60
 		},
 		{
-      team: 'red',
+      team: 'blue',
 			cx: 500,
       dx: 500,
 			cy: 250,
@@ -70,7 +96,10 @@ export default function game(state=initialState, action) {
     case 'PLAYER_COLLISION':
     case 'MOVE_PLAYER':
       return {...state,
-        player: playerReducer(state.player, action)
+        players: {
+          ...state.players,
+          [state.me]: playerReducer(state.players[state.me], action)
+        }
       }
     default: 
       return state
