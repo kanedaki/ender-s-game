@@ -15,6 +15,18 @@ export function oppositeDoorCollision(circle, doors, team) {
   })
 }
 
+export function bulletCollision(bulletRadio, bulletPosition, players) {
+	return Object.keys(players).reduce((impactedPlayers, key) => {
+		// devuelve los players impactados
+		const player = players[key]
+debugger;
+		if (circlesIntersection(player.cx, player.cy, player.radio/2, bulletPosition.cx, bulletPosition.cy, bulletRadio/2)) {
+			impactedPlayers[key] = player
+		}
+		return impactedPlayers
+	}, {})
+}
+
 function doorCollision(circle, line) {
   return pointLineSegmentDistance(circle, line) <= circle[2]  
 }
@@ -65,4 +77,29 @@ function pointLineSegmentDistance(point, line) {
 function pointPointSquaredDistance(v, w) {
   var dx = v[0] - w[0], dy = v[1] - w[1];
   return dx * dx + dy * dy;
+}
+
+function circlesIntersection(x0, y0, r0, x1, y1, r1) {
+	var a, dx, dy, d, h, rx, ry;
+	var x2, y2;
+
+	/* dx and dy are the vertical and horizontal distances between
+	 * the circle centers.
+	 */
+	dx = x1 - x0;
+	dy = y1 - y0;
+
+	/* Determine the straight-line distance between the centers. */
+	d = Math.sqrt((dy*dy) + (dx*dx));
+
+	/* Check for solvability. */
+	if (d > (r0 + r1)) {
+			/* no solution. circles do not intersect. */
+			return false;
+	}
+	if (d < Math.abs(r0 - r1)) {
+			/* no solution. one circle is contained in the other */
+			return false;
+	}
+	return true
 }

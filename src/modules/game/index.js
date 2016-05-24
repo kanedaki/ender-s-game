@@ -3,32 +3,36 @@ const initialState = {
   players: {
     1: {
       team: 'red',
+			status: 'ok',
       radio: 6,
-      cx: 5,
+      cx: 7,
       cy: 20,
       isMoving: false,
       direction: 'left'
     },
     2: {
       team: 'red',
+			status: 'ok',
       radio: 6,
-      cx: 5,
+      cx: 7,
       cy: 26,
       isMoving: false,
       direction: 'left'
     },
     3: {
       team: 'blue',
+			status: 'ok',
       radio: 6,
-      cx: 495,
+      cx: 493,
       cy: 250,
       isMoving: false,
       direction: 'left'
     },
     4: {
       team: 'blue',
+			status: 'ok',
       radio: 6,
-      cx: 495,
+      cx: 493,
       cy: 256,
       isMoving: false,
       direction: 'left'
@@ -69,6 +73,11 @@ function bulletsReducer(state, action, polygons) {
 
 function playerReducer(state, action, polygons) {
   switch (action.type) {
+		case 'PLAYER_IMPACTED': 
+			return {
+				...state,
+				status: state.status === 'ok' ? 'injured' : 'inmobilized' 
+			}
     case 'MOVE_PLAYER':
       return {...state,
         isMoving: true,
@@ -101,6 +110,14 @@ export default function game(state=initialState, action) {
           [state.me]: playerReducer(state.players[state.me], action)
         }
       }
+		case 'PLAYER_IMPACTED':
+			const { playerId } = action.payload
+			return {...state,
+				players: {
+					...state.players,
+					[playerId]: playerReducer(state.players[playerId], action)
+				}
+			}
     default: 
       return state
   } 

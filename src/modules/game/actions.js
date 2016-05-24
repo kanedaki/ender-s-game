@@ -1,5 +1,5 @@
 import { startListeners } from 'core/services/userInterface'
-import { wallCollision, oppositeDoorCollision } from 'core/logic/collision'
+import { wallCollision, oppositeDoorCollision, bulletCollision } from 'core/logic/collision'
 import { playerWin } from 'modules/gameState/actions'
 
 function move({ cx, cy }, direction, speed=1) {
@@ -64,16 +64,37 @@ export function startGame() {
   }
 }
 
+function calculateBulletStartingPoint(direction, {cx, cy}) {
+	switch(direction) {
+		case 'up':
+			return {cx, cy: cy - 4}
+		case 'upLeft':
+			return {cx: cx - 4, cy: cy - 4}
+		case 'upRight':
+			return {cx: cx + 4, cy: cy - 4}
+		case 'left':
+			return {cx: cx - 4, cy}
+		case 'right':
+			return {cx: cx + 4, cy}
+		case 'downLeft':
+			return {cx: cx - 4, cy: cy + 4}
+		case 'downRight':
+			return {cx: cx + 4, cy: cy + 4}
+		case 'down':
+			return {cx: cx + 4, cy}
+	}
+}
+
 export function fire(direction) {
   return (dispatch, getState) => {
     const { players, me } = getState().game,
-          player = players[me]
+          player = players[me],
+					position = calculateBulletStartingPoint(direction, player)
     dispatch({
       type: 'FIRE',
       payload: {
         direction,
-        cx: player.cx,
-        cy: player.cy,
+				...position,
         speed: 2,
         radio: 1
       }
@@ -119,11 +140,25 @@ function updateBullets(bullets) {
   }  
 }
 
-function manageBullets(dispatch, bullets, polygons) {
-  let nextMove 
+function playerImpacted(playerId) {
+	return {
+		type: 'PLAYER_IMPACTED',
+		payload: {
+			playerId
+		}
+	}
+}
+
+function manageBullets(dispatch, bullets, polygons, players) {
+  let nextMove, impactedPlayers 
   const bulletsLeft = bullets.filter((bullet) => {
     nextMove = move({cx: bullet.cx, cy: bullet.cy}, bullet.direction)
-    return !wallCollision(bullet.radio, nextMove, polygons)
+    impactedPlayers = bulletCollision(bullet.radio, nextMove, players)
+		Object.keys(impactedPlayers).forEach((key) => {
+			debugger;
+			dispatch(playerImpacted(key))
+		})
+    return !wallCollision(bullet.radio, nextMove, polygons) && Object.keys(impactedPlayers).length == 0
   }).map((bullet) => {
      return {...bullet, 
       ...move({cx: bullet.cx, cy: bullet.cy}, bullet.direction, bullet.speed)
@@ -136,7 +171,7 @@ function updateGame(dispatch, getState) {
   const { gameState, game } = getState()
   const { players, polygons, doors, bullets, me } = game
   managePlayer(dispatch, players[me], polygons, doors)
-  manageBullets(dispatch, bullets, polygons)
+  manageBullets(dispatch, bullets, polygons, players)
   dispatch({
     type: 'GAME_UPDATED'  
   }) 
