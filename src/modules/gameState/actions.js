@@ -1,6 +1,9 @@
-export function playerWin() {
+export function gameFinished(winner) {
   return {
-    type: 'PLAYER_WIN'
+    type: 'GAME_FINISHED',
+    payload: {
+      winner   
+    }
   }  
 }
 

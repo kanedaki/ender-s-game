@@ -1,9 +1,11 @@
-const initialState = 'READY'
+const initialState = {
+  state: 'READY'
+}
 
 export default function gameState(state=initialState, action) {
    switch(action.type) {
-      case 'PLAYER_WIN':
-        return 'FINISHED'
+      case 'GAME_FINISHED':
+        return {state: 'FINISHED', winner: action.payload.winner}
       default:
         return state
     } 

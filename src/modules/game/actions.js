@@ -1,6 +1,6 @@
 import { startListeners } from 'core/services/userInterface'
 import { wallCollision, oppositeDoorCollision, bulletCollision } from 'core/logic/collision'
-import { playerWin } from 'modules/gameState/actions'
+import { gameFinished} from 'modules/gameState/actions'
 
 function move({ cx, cy }, direction, speed=1) {
   switch(direction) {
@@ -81,7 +81,7 @@ function calculateBulletStartingPoint(direction, {cx, cy}) {
 		case 'downRight':
 			return {cx: cx + 4, cy: cy + 4}
 		case 'down':
-			return {cx: cx + 4, cy}
+			return {cx, cy: cy + 4}
 	}
 }
 
@@ -121,7 +121,7 @@ function managePlayer(dispatch, {isMoving, cx, cy, direction, radio, team}, poly
   if (isMoving) {
     const possibleNextMove = move({cx, cy}, direction)
     if (oppositeDoorCollision([possibleNextMove.cx, possibleNextMove.cy, radio], doors, team)) {
-      dispatch(playerWin())  
+      dispatch(gameFinished(team))  
     }
     if (wallCollision(radio, possibleNextMove, polygons)) {
       dispatch(playerCollision())
@@ -155,7 +155,6 @@ function manageBullets(dispatch, bullets, polygons, players) {
     nextMove = move({cx: bullet.cx, cy: bullet.cy}, bullet.direction)
     impactedPlayers = bulletCollision(bullet.radio, nextMove, players)
 		Object.keys(impactedPlayers).forEach((key) => {
-			debugger;
 			dispatch(playerImpacted(key))
 		})
     return !wallCollision(bullet.radio, nextMove, polygons) && Object.keys(impactedPlayers).length == 0
@@ -167,15 +166,42 @@ function manageBullets(dispatch, bullets, polygons, players) {
   dispatch(updateBullets(bulletsLeft))
 }
 
+function manageState(dispatch, players, me) {
+  const myTeam = players[me].team,
+        yours = Object.keys(players).filter(id=> {
+          return players[id].team == myTeam  
+        }),
+        others = Object.keys(players).filter(id=> {
+          return players[id].team !== myTeam  
+        }),
+        loose = yours.every(id => {
+          return players[id].status === 'inmobilized'
+        }),
+        win = others.every(id => {
+          return players[id].status === 'inmobilized'
+        })
+  switch(true) {
+    case loose && win:
+      dispatch(gameFinished())
+    case loose:
+      dispatch(gameFinished(players[others[0]].team))
+    case win:
+      dispatch(gameFinished(myTeam))
+    default:
+      return
+  }
+}
+
 function updateGame(dispatch, getState) {
-  const { gameState, game } = getState()
+  const { gameState: {state}, game } = getState()
   const { players, polygons, doors, bullets, me } = game
+  manageState(dispatch, players, me)
   managePlayer(dispatch, players[me], polygons, doors)
   manageBullets(dispatch, bullets, polygons, players)
   dispatch({
     type: 'GAME_UPDATED'  
   }) 
-  if (gameState !== 'FINISHED') {
+  if (state!== 'FINISHED') {
     loop(dispatch, getState)
   }
 }

@@ -19,8 +19,7 @@ export function bulletCollision(bulletRadio, bulletPosition, players) {
 	return Object.keys(players).reduce((impactedPlayers, key) => {
 		// devuelve los players impactados
 		const player = players[key]
-debugger;
-		if (circlesIntersection(player.cx, player.cy, player.radio/2, bulletPosition.cx, bulletPosition.cy, bulletRadio/2)) {
+		if (circlesIntersection(player.cx, player.cy, player.radio/2, bulletPosition.cx, bulletPosition.cy, bulletRadio)) {
 			impactedPlayers[key] = player
 		}
 		return impactedPlayers

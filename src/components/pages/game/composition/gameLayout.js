@@ -31,16 +31,16 @@ export default class GameLayout extends Component {
 		})
 	}
   renderGameState() {
-    const { gameState } = this.props
-    if (gameState === 'FINISHED') {
-      return <GameState state={gameState} />  
+    const { gameState: {state, winner} } = this.props
+    if (state === 'FINISHED') {
+      return <GameState state={state} winner={winner} />  
     }  
   }
   renderPlayers() {
     const {players, me} = this.props
     return Object.keys(players).map((player, i) => {
-      const {cx, cy, radio, team} = players[player]
-      return  <Player key={i} cx={cx} cy={cy} r={radio} color={me === player ? 'green' : team}/>
+      const {cx, cy, radio, team, status} = players[player]
+      return  <Player key={i} cx={cx} cy={cy} r={radio} status={status} color={me === player ? 'green' : team}/>
     })
   }
   render() {
@@ -62,5 +62,8 @@ GameLayout.propTypes = {
   bullets: PropTypes.array.isRequired,
   polygons: PropTypes.array.isRequired,
   doors: PropTypes.array.isRequired,
-	gameState: PropTypes.string.isRequired
+	gameState: PropTypes.shape({
+    state: PropTypes.string.isRequired,
+    winner: PropTypes.string
+  }).isRequired
 }

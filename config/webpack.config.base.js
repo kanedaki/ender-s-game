@@ -1,4 +1,9 @@
-const path = require('path')
+const path = require('path'),
+      basePath = process.cwd()
+
+function resolvePath(relPath) {
+  return path.resolve(basePath, relPath)  
+}
 
 module.exports = {
   name: 'redux-base-app', // project name
@@ -27,6 +32,11 @@ module.exports = {
 
   /* modules resolving config */
   resolve: {
+    alias: {
+      core: resolvePath('src/core'),
+      modules: resolvePath('src/modules'),
+      components: resolvePath('src/components')
+    },
     modulesDirectories: ['node_modules'], // look for modules in listed directories only
     extensions: ['', '.js'] // resolve modules with listed extensions only
   },
