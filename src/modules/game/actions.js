@@ -26,13 +26,21 @@ function move({ cx, cy }, direction, speed=1) {
 function ableToJump(radio, position, direction, polygons) {
   switch(direction) {
     case 'up':
-      return wallCollision(radio, move(position, 'down'), polygons) || wallCollision(radio, move(position, 'right'), polygons) || wallCollision(radio, move(position, 'left'), polygons)
-    case 'down':
-      return wallCollision(radio, move(position, 'up'), polygons) || wallCollision(radio, move(position, 'right'), polygons) || wallCollision(radio, move(position, 'left'), polygons)
-    case 'left':
-      return wallCollision(radio, move(position, 'down'), polygons) || wallCollision(radio, move(position, 'right'), polygons) || wallCollision(radio, move(position, 'up'), polygons)
+      return wallCollision(radio, move(position, 'down'), polygons)
+    case 'upRight':
+      return wallCollision(radio, move(position, 'down'), polygons) || wallCollision(radio, move(position, 'left'), polygons)
     case 'right':
-      return wallCollision(radio, move(position, 'down'), polygons) || wallCollision(radio, move(position, 'up'), polygons) || wallCollision(radio, move(position, 'left'), polygons)
+      return wallCollision(radio, move(position, 'left'), polygons)
+    case 'downRight':
+      return wallCollision(radio, move(position, 'up'), polygons) || wallCollision(radio, move(position, 'left'), polygons)
+    case 'down':
+      return wallCollision(radio, move(position, 'up'), polygons)
+    case 'downLeft':
+      return wallCollision(radio, move(position, 'up'), polygons) || wallCollision(radio, move(position, 'right'), polygons)
+    case 'left':
+      return wallCollision(radio, move(position, 'right'), polygons)
+    case 'upLeft':
+      return wallCollision(radio, move(position, 'down'), polygons) || wallCollision(radio, move(position, 'right'), polygons)
   }
 }
 
